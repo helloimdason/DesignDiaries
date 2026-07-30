@@ -67,8 +67,20 @@ function playSound(sound) {
   return true;
 }
 function unlockSoundEffects() {
-  if (audioCtx && audioCtx.state === "suspended") {
-    audioCtx.resume();
+  if (audioCtx) {
+    // On iOS Safari, AudioContext.resume() alone doesn't reliably open the
+    // hardware audio pipeline — actually starting a (silent) buffer
+    // synchronously inside the gesture handler is the standard technique
+    // audio libraries use to force it unlocked, rather than just asking the
+    // context to resume and hoping the state flips before anything tries
+    // to play.
+    const primer = audioCtx.createBufferSource();
+    primer.buffer = audioCtx.createBuffer(1, 1, 22050);
+    primer.connect(audioCtx.destination);
+    primer.start(0);
+    if (audioCtx.state === "suspended") {
+      audioCtx.resume();
+    }
   }
   ["pointerdown", "touchstart", "keydown"].forEach((type) =>
     document.removeEventListener(type, unlockSoundEffects),
