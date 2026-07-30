@@ -140,7 +140,7 @@ document.querySelectorAll(".mailto-btn").forEach((btn) => {
 document.querySelectorAll(".app-link-btn").forEach((btn) => {
   btn.addEventListener("click", () => {
     setTimeout(() => {
-      window.location.href = "https://www.app.designdiaries.xyz";
+      window.location.href = "https://app.designdiaries.xyz";
     }, 200);
   });
 });
