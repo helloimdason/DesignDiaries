@@ -1,0 +1,810 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Design Diaries — Honest Reflections from Designers Like You</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,400;0,500;0,600;1,500;1,600&family=Figtree:wght@400;500;600&family=Patrick+Hand&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="styles.css" />
+    <script src="https://unpkg.com/lenis@1.1.13/dist/lenis.min.js"></script>
+  </head>
+  <body>
+    <!-- ===================== HEADER ===================== -->
+    <header class="site-header">
+      <div class="container header-inner flex">
+        <img
+          src="Assets/Logo/Logo_DesignDiaries.svg"
+          alt="Design Diaries"
+          class="logo"
+        />
+        <button class="btn btn-primary app-link-btn">Open Diary</button>
+      </div>
+    </header>
+
+    <!-- ===================== HERO + QUOTE (pin & overlap) ===================== -->
+    <div class="hero-quote-wrap">
+      <!-- ===================== HERO (pinned as one unit; quote slides over it) ===================== -->
+      <div class="hero-pin">
+        <section class="hero">
+          <div class="container hero-inner row">
+            <img
+              src="Assets/Illustrations/Diary_Large.png"
+              alt="An open diary that reads: This is My Design Diary"
+              class="hero-diary"
+            />
+          </div>
+          <img
+            src="Assets/Illustrations/Airplane.png"
+            alt=""
+            class="hero-float hero-float-airplane"
+            aria-hidden="true"
+          />
+          <img
+            src="Assets/Illustrations/Pencil.png"
+            alt=""
+            class="hero-float hero-float-pencil"
+            aria-hidden="true"
+          />
+          <img
+            src="Assets/Illustrations/Paperclip.png"
+            alt=""
+            class="hero-float hero-float-paperclip"
+            aria-hidden="true"
+          />
+          <img
+            src="Assets/Illustrations/Smile.png"
+            alt=""
+            class="hero-float hero-float-smile"
+            aria-hidden="true"
+          />
+        </section>
+
+        <div class="hero-wrap">
+          <div class="container hero-copy-row row">
+            <div class="hero-copy col col-4 col-md-7 col-lg-6">
+              <div class="hero-heading">
+                <h1 class="hero-title">
+                  Honest Reflections from <em> Designers Like You </em>
+                </h1>
+                <p class="body-large hero-sub">
+                  Your place to share the wins, the struggles, and everything in
+                  between.
+                </p>
+              </div>
+              <button class="btn btn-primary app-link-btn">Write Something</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ===================== QUOTE / LINED PAPER (slides over the pinned hero) ===================== -->
+      <section class="quote-section">
+        <div class="container">
+          <p class="quote-text">
+            You've got questions you're too afraid to ask, stories you've never
+            told, and days wondering if you're even good enough. The truth is,
+            you're not the only one. You just don't hear about it.
+          </p>
+        </div>
+      </section>
+    </div>
+
+    <!-- ===================== IT'S THIS SIMPLE ===================== -->
+    <section class="simple-section">
+      <div class="simple-sticky">
+        <div class="container">
+          <h2 class="section-title center">It's this <em>simple</em></h2>
+          <div class="feature-stack">
+            <div class="feature-card-slot">
+              <article
+                class="feature-card"
+                style="background: #ffecaa; --stack-x: 0px"
+              >
+                <img
+                  src="Assets/Illustrations/QuestionPaper.png"
+                  alt=""
+                  class="feature-image"
+                />
+                <div class="feature-copy col">
+                  <h3>Start with a prompt</h3>
+                  <p class="body-small">
+                    Shuffle by topic or answer the question of the day. Answer
+                    whatever gets you writing.
+                  </p>
+                </div>
+              </article>
+            </div>
+            <div class="feature-card-slot">
+              <article
+                class="feature-card"
+                style="
+                  background: #aee4bb;
+                  --stack-x: calc(
+                    (100% - 3 * var(--gutter)) / 4 + var(--gutter)
+                  );
+                "
+              >
+                <img
+                  src="Assets/Illustrations/Quill.png"
+                  alt=""
+                  class="feature-image"
+                />
+                <div class="feature-copy col">
+                  <h3>Write what's true</h3>
+                  <p class="body-small">
+                    However unpolished it may be, just write it. No one's here
+                    for perfection, only you.
+                  </p>
+                </div>
+              </article>
+            </div>
+            <div class="feature-card-slot">
+              <article
+                class="feature-card"
+                style="
+                  background: #a3def9;
+                  --stack-x: calc(
+                    (100% - 3 * var(--gutter)) / 2 + 2 * var(--gutter)
+                  );
+                "
+              >
+                <img
+                  src="Assets/Illustrations/PaperPlanes.png"
+                  alt=""
+                  class="feature-image"
+                />
+                <div class="feature-copy col">
+                  <h3>Share yours, read theirs</h3>
+                  <p class="body-small">
+                    See where others are in their journey. You might just find a
+                    bit of yourself in them.
+                  </p>
+                </div>
+              </article>
+            </div>
+            <div class="feature-card-slot">
+              <article
+                class="feature-card"
+                style="
+                  background: #cbccff;
+                  --stack-x: calc(
+                    (100% - 3 * var(--gutter)) * 3 / 4 + 3 * var(--gutter)
+                  );
+                "
+              >
+                <img
+                  src="Assets/Illustrations/PaperNotes.png"
+                  alt=""
+                  class="feature-image"
+                />
+                <div class="feature-copy col">
+                  <h3>Save what sticks</h3>
+                  <p class="body-small">
+                    Found something you like? Add it to your notebook, so it's
+                    there whenever you need it.
+                  </p>
+                </div>
+              </article>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================== TOGETHER SECTION ===================== -->
+    <section class="section together-section">
+      <div class="grid-bg" aria-hidden="true"></div>
+      <div class="container together-inner row">
+        <div class="together-copy col col-4 col-md-8 col-lg-6">
+          <h2 class="section-title">We're figuring it out <em>together</em></h2>
+          <p class="body-large">
+            No one's here to judge, we're all learning and making mistakes. What
+            you write is all anyone sees. We never show your name or build a
+            profile around you.
+          </p>
+          <button class="btn btn-primary app-link-btn">See for yourself</button>
+        </div>
+        <div class="together-art col col-lg-6">
+          <img src="Assets/Cards/QOTD.png" alt="" class="entry-card" />
+          <img src="Assets/Cards/Struggle.png" alt="" class="entry-card" />
+          <img src="Assets/Cards/Win.png" alt="" class="entry-card" />
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================== TESTIMONIALS ===================== -->
+    <section class="section testimonials-section">
+      <div class="container">
+        <h2 class="section-title center">
+          What other designers are <em>feeling</em>
+        </h2>
+        <div class="testimonial-row">
+          <div class="testimonial-track flex">
+            <article class="testimonial-card flex">
+              <img
+                src="Assets/Extras/Tape_Green.svg"
+                alt=""
+                class="testimonial-tape"
+                aria-hidden="true"
+              />
+              <div class="stars flex">
+                <img src="Assets/Icons/Star_Filled.png" alt="" /><img
+                  src="Assets/Icons/Star_Filled.png"
+                  alt=""
+                /><img src="Assets/Icons/Star_Filled.png" alt="" /><img
+                  src="Assets/Icons/Star_Filled.png"
+                  alt=""
+                /><img src="Assets/Icons/Star_Filled.png" alt="" />
+              </div>
+              <p class="testimonial-quote">
+                "I used to think everyone else had it figured out. Turns out,
+                we're all just guessing our way through it. Just knowing that
+                made me so much more confident."
+              </p>
+              <div class="testimonial-reviewer flex">
+                <img
+                  src="Assets/Illustrations/Jamie.png"
+                  alt=""
+                  class="testimonial-avatar"
+                />
+                <div class="testimonial-info">
+                  <p class="body-small testimonial-name">Jamie</p>
+                  <p class="body-small testimonial-role">Web Design Student</p>
+                </div>
+              </div>
+            </article>
+            <article class="testimonial-card flex">
+              <img
+                src="Assets/Extras/Tape_Pink.svg"
+                alt=""
+                class="testimonial-tape"
+                aria-hidden="true"
+              />
+              <div class="stars flex">
+                <img src="Assets/Icons/Star_Filled.png" alt="" /><img
+                  src="Assets/Icons/Star_Filled.png"
+                  alt=""
+                /><img src="Assets/Icons/Star_Filled.png" alt="" /><img
+                  src="Assets/Icons/Star_Filled.png"
+                  alt=""
+                /><img src="Assets/Icons/Star_Filled.png" alt="" />
+              </div>
+              <p class="testimonial-quote">
+                "I don't think I've ever admitted to anyone that I'm always
+                comparing myself to my classmates. Writing about it made me
+                realize everyone is actually in the same boat."
+              </p>
+              <div class="testimonial-reviewer flex">
+                <img
+                  src="Assets/Illustrations/Sarah.png"
+                  alt=""
+                  class="testimonial-avatar"
+                />
+                <div class="testimonial-info">
+                  <p class="body-small testimonial-name">Sarah</p>
+                  <p class="body-small testimonial-role">
+                    Illustration Student
+                  </p>
+                </div>
+              </div>
+            </article>
+            <article class="testimonial-card flex">
+              <img
+                src="Assets/Extras/Tape_Blue.svg"
+                alt=""
+                class="testimonial-tape"
+                aria-hidden="true"
+              />
+              <div class="stars flex">
+                <img src="Assets/Icons/Star_Filled.png" alt="" /><img
+                  src="Assets/Icons/Star_Filled.png"
+                  alt=""
+                /><img src="Assets/Icons/Star_Filled.png" alt="" /><img
+                  src="Assets/Icons/Star_Filled.png"
+                  alt=""
+                /><img src="Assets/Icons/Star_Filled.png" alt="" />
+              </div>
+              <p class="testimonial-quote">
+                "Reading other people's advice taught me more about pitching my
+                work than any class did."
+              </p>
+              <div class="testimonial-reviewer flex">
+                <img
+                  src="Assets/Illustrations/Morgan.png"
+                  alt=""
+                  class="testimonial-avatar"
+                />
+                <div class="testimonial-info">
+                  <p class="body-small testimonial-name">Morgan</p>
+                  <p class="body-small testimonial-role">
+                    Freelance Graphic Designer
+                  </p>
+                </div>
+              </div>
+            </article>
+            <article class="testimonial-card flex">
+              <img
+                src="Assets/Extras/Tape_Purple.svg"
+                alt=""
+                class="testimonial-tape"
+                aria-hidden="true"
+              />
+              <div class="stars flex">
+                <img src="Assets/Icons/Star_Filled.png" alt="" /><img
+                  src="Assets/Icons/Star_Filled.png"
+                  alt=""
+                /><img src="Assets/Icons/Star_Filled.png" alt="" /><img
+                  src="Assets/Icons/Star_Filled.png"
+                  alt=""
+                /><img src="Assets/Icons/Star_Filled.png" alt="" />
+              </div>
+              <p class="testimonial-quote">
+                "This is the only place I've admitted I want to switch from fine
+                art to graphic design, 3 years in. Turns out plenty of designers
+                started somewhere completely different."
+              </p>
+              <div class="testimonial-reviewer flex">
+                <img
+                  src="Assets/Illustrations/Alex.png"
+                  alt=""
+                  class="testimonial-avatar"
+                />
+                <div class="testimonial-info">
+                  <p class="body-small testimonial-name">Alex</p>
+                  <p class="body-small testimonial-role">
+                    Graphic Design Student
+                  </p>
+                </div>
+              </div>
+            </article>
+            <article class="testimonial-card flex">
+              <img
+                src="Assets/Extras/Tape_Yellow.svg"
+                alt=""
+                class="testimonial-tape"
+                aria-hidden="true"
+              />
+              <div class="stars flex">
+                <img src="Assets/Icons/Star_Filled.png" alt="" /><img
+                  src="Assets/Icons/Star_Filled.png"
+                  alt=""
+                /><img src="Assets/Icons/Star_Filled.png" alt="" /><img
+                  src="Assets/Icons/Star_Filled.png"
+                  alt=""
+                /><img src="Assets/Icons/Star_Filled.png" alt="" />
+              </div>
+              <p class="testimonial-quote">
+                "I keep a running list of small wins that I'd never post
+                anywhere else. Sharing big news is great, but it's the small
+                stuff that actually adds up."
+              </p>
+              <div class="testimonial-reviewer flex">
+                <img
+                  src="Assets/Illustrations/Olli.png"
+                  alt=""
+                  class="testimonial-avatar"
+                />
+                <div class="testimonial-info">
+                  <p class="body-small testimonial-name">Olli</p>
+                  <p class="body-small testimonial-role">
+                    UX/UI Design Student
+                  </p>
+                </div>
+              </div>
+            </article>
+            <article class="testimonial-card flex">
+              <img
+                src="Assets/Extras/Tape_Green.svg"
+                alt=""
+                class="testimonial-tape"
+                aria-hidden="true"
+              />
+              <div class="stars flex">
+                <img src="Assets/Icons/Star_Filled.png" alt="" /><img
+                  src="Assets/Icons/Star_Filled.png"
+                  alt=""
+                /><img src="Assets/Icons/Star_Filled.png" alt="" /><img
+                  src="Assets/Icons/Star_Filled.png"
+                  alt=""
+                /><img src="Assets/Icons/Star_Filled.png" alt="" />
+              </div>
+              <p class="testimonial-quote">
+                "The question of the day lets me exercise my brain and reflect
+                on how far I've come. Way better than just walking into a 9am
+                meeting."
+              </p>
+              <div class="testimonial-reviewer flex">
+                <img
+                  src="Assets/Illustrations/Will.png"
+                  alt=""
+                  class="testimonial-avatar"
+                />
+                <div class="testimonial-info">
+                  <p class="body-small testimonial-name">Will</p>
+                  <p class="body-small testimonial-role">Jr. Brand Designer</p>
+                </div>
+              </div>
+            </article>
+            <article class="testimonial-card flex">
+              <img
+                src="Assets/Extras/Tape_Pink.svg"
+                alt=""
+                class="testimonial-tape"
+                aria-hidden="true"
+              />
+              <div class="stars flex">
+                <img src="Assets/Icons/Star_Filled.png" alt="" /><img
+                  src="Assets/Icons/Star_Filled.png"
+                  alt=""
+                /><img src="Assets/Icons/Star_Filled.png" alt="" /><img
+                  src="Assets/Icons/Star_Filled.png"
+                  alt=""
+                /><img src="Assets/Icons/Star_Filled.png" alt="" />
+              </div>
+              <p class="testimonial-quote">
+                "I wrote about freezing during a UX design interview and
+                blanking on basic questions. Somehow I'm not the only one."
+              </p>
+              <div class="testimonial-reviewer flex">
+                <img
+                  src="Assets/Illustrations/Kai.png"
+                  alt=""
+                  class="testimonial-avatar"
+                />
+                <div class="testimonial-info">
+                  <p class="body-small testimonial-name">Kai</p>
+                  <p class="body-small testimonial-role">Jr. UX Designer</p>
+                </div>
+              </div>
+            </article>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================== FOUNDER NOTE ===================== -->
+    <section class="section founder-section">
+      <div class="container founder-inner flex">
+        <div class="founder-envelope">
+          <div class="founder-flap" aria-hidden="true"></div>
+          <div class="founder-card">
+            <h3 class="founder-heading">A note from the founder</h3>
+            <div class="founder-body">
+              <p class="body-medium">Hey Designers,</p>
+              <p class="body-medium">
+                Thanks for reading this far, and for however far you've come as
+                a designer. Design isn't easy. It's hard work, trial and error,
+                and feelings most of us carry alone.
+              </p>
+              <p class="body-medium">
+                For me, my design career has left me frustrated more often than
+                not, craving things I didn't have: people who related to me,
+                real conversations, and a personal outlet for it all.
+              </p>
+              <p class="body-medium">
+                I loved sharing, but most people were too busy or just not
+                interested. Even when I did get the chance to chat, I didn't
+                want them to think less of me. So I kept it to myself, which
+                turned into constant overthinking, many slow days, and a lot of
+                self-doubt. I often wondered if I was even cut out for this.
+              </p>
+              <p class="body-medium">
+                Sound familiar? That's exactly why I built Design Diaries. It's
+                a place where you can be honest about where you're at, reflect
+                on your progress, and see what others are working through, all
+                without being judged.
+              </p>
+              <p class="body-medium">
+                Every entry comes from a designer like you. I hope you'll add
+                yours too.
+              </p>
+              <p class="body-medium">Keep sharing,<br />Dason</p>
+            </div>
+          </div>
+          <img
+            src="Assets/Illustrations/SelfPortrait.png"
+            alt="A self-portrait illustration of Dason, the founder"
+            class="founder-portrait"
+          />
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================== FAQ ===================== -->
+    <section class="section faq-section">
+      <div class="container faq-inner row">
+        <div class="faq-copy col col-4 col-md-8 col-lg-6">
+          <h2 class="section-title">In case you're <em>wondering</em></h2>
+          <button class="btn btn-primary mailto-btn">Ask a question</button>
+        </div>
+        <div class="accordion-list col col-4 col-md-8">
+          <div class="accordion-item">
+            <h3>
+              <button class="accordion-trigger flex" aria-expanded="false">
+                <span class="accordion-question flex">
+                  <img
+                    src="Assets/Icons/Number_1.png"
+                    alt=""
+                    class="number-icon"
+                    aria-hidden="true"
+                  />
+                  <span>What kind of designer is this for?</span>
+                </span>
+                <img
+                  src="Assets/Icons/Arrow.png"
+                  alt=""
+                  class="chevron"
+                  aria-hidden="true"
+                />
+              </button>
+            </h3>
+            <div class="accordion-panel">
+              <div class="accordion-panel-inner">
+                <p class="body-medium">
+                  Any kind — students, freelancers, in-house teams, career
+                  switchers. If you make design decisions and sometimes doubt
+                  them, you belong here.
+                </p>
+              </div>
+            </div>
+          </div>
+          <div class="accordion-item">
+            <h3>
+              <button class="accordion-trigger flex" aria-expanded="false">
+                <span class="accordion-question flex">
+                  <img
+                    src="Assets/Icons/Number_2.png"
+                    alt=""
+                    class="number-icon"
+                    aria-hidden="true"
+                  />
+                  <span>What happens after I post?</span>
+                </span>
+                <img
+                  src="Assets/Icons/Arrow.png"
+                  alt=""
+                  class="chevron"
+                  aria-hidden="true"
+                />
+              </button>
+            </h3>
+            <div class="accordion-panel">
+              <div class="accordion-panel-inner">
+                <p class="body-medium">
+                  Your entry is shared anonymously with the community. Other
+                  designers can read it and respond, but no one will ever know
+                  it was you.
+                </p>
+              </div>
+            </div>
+          </div>
+          <div class="accordion-item">
+            <h3>
+              <button class="accordion-trigger flex" aria-expanded="false">
+                <span class="accordion-question flex">
+                  <img
+                    src="Assets/Icons/Number_3.png"
+                    alt=""
+                    class="number-icon"
+                    aria-hidden="true"
+                  />
+                  <span>What if I'm not a "real" designer yet?</span>
+                </span>
+                <img
+                  src="Assets/Icons/Arrow.png"
+                  alt=""
+                  class="chevron"
+                  aria-hidden="true"
+                />
+              </button>
+            </h3>
+            <div class="accordion-panel">
+              <div class="accordion-panel-inner">
+                <p class="body-medium">
+                  You don't need a certain title, a portfolio, or years of
+                  experience to belong here. If you're learning, exploring, or
+                  even just calling yourself a designer for the first time, that
+                  counts.
+                </p>
+              </div>
+            </div>
+          </div>
+          <div class="accordion-item">
+            <h3>
+              <button class="accordion-trigger flex" aria-expanded="false">
+                <span class="accordion-question flex">
+                  <img
+                    src="Assets/Icons/Number_4.png"
+                    alt=""
+                    class="number-icon"
+                    aria-hidden="true"
+                  />
+                  <span>What do I need to get started?</span>
+                </span>
+                <img
+                  src="Assets/Icons/Arrow.png"
+                  alt=""
+                  class="chevron"
+                  aria-hidden="true"
+                />
+              </button>
+            </h3>
+            <div class="accordion-panel">
+              <div class="accordion-panel-inner">
+                <p class="body-medium">
+                  Just an honest thought and a couple of minutes. No portfolio,
+                  no credentials, no polished writing required.
+                </p>
+              </div>
+            </div>
+          </div>
+          <div class="accordion-item">
+            <h3>
+              <button class="accordion-trigger flex" aria-expanded="false">
+                <span class="accordion-question flex">
+                  <img
+                    src="Assets/Icons/Number_5.png"
+                    alt=""
+                    class="number-icon"
+                    aria-hidden="true"
+                  />
+                  <span>How does posting work?</span>
+                </span>
+                <img
+                  src="Assets/Icons/Arrow.png"
+                  alt=""
+                  class="chevron"
+                  aria-hidden="true"
+                />
+              </button>
+            </h3>
+            <div class="accordion-panel">
+              <div class="accordion-panel-inner">
+                <p class="body-medium">
+                  You can answer today's prompt or shuffle to a topic that
+                  you're interested in. Once set, write from your own
+                  experience, up to 150 words. Your diary entries are anonymous,
+                  so don't be afraid to just say it.
+                </p>
+              </div>
+            </div>
+          </div>
+          <div class="accordion-item">
+            <h3>
+              <button class="accordion-trigger flex" aria-expanded="false">
+                <span class="accordion-question flex">
+                  <img
+                    src="Assets/Icons/Number_6.png"
+                    alt=""
+                    class="number-icon"
+                    aria-hidden="true"
+                  />
+                  <span>Is this free?</span>
+                </span>
+                <img
+                  src="Assets/Icons/Arrow.png"
+                  alt=""
+                  class="chevron"
+                  aria-hidden="true"
+                />
+              </button>
+            </h3>
+            <div class="accordion-panel">
+              <div class="accordion-panel-inner">
+                <p class="body-medium">
+                  Yes. It's completely free to use, no strings attached.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================== FINAL CTA ===================== -->
+    <section class="section cta-section">
+      <div class="container cta-inner">
+        <div class="cta-frame">
+          <div class="cta-copy">
+            <h2 class="cta-title">Designers want to hear from you</h2>
+            <p class="cta-desc">
+              You don't need the right words. Just your words.
+            </p>
+          </div>
+          <div class="arrow-cta">
+            <img
+              src="Assets/Illustrations/Arrow.png"
+              class="arrow arrow-nw"
+              alt=""
+            />
+            <img
+              src="Assets/Illustrations/Arrow.png"
+              class="arrow arrow-n"
+              alt=""
+            />
+            <img
+              src="Assets/Illustrations/Arrow.png"
+              class="arrow arrow-ne"
+              alt=""
+            />
+            <img
+              src="Assets/Illustrations/Arrow.png"
+              class="arrow arrow-w"
+              alt=""
+            />
+            <button class="btn btn-primary btn-large app-link-btn">Write Something</button>
+            <img
+              src="Assets/Illustrations/Arrow.png"
+              class="arrow arrow-e"
+              alt=""
+            />
+            <img
+              src="Assets/Illustrations/Arrow.png"
+              class="arrow arrow-sw"
+              alt=""
+            />
+            <img
+              src="Assets/Illustrations/Arrow.png"
+              class="arrow arrow-s"
+              alt=""
+            />
+            <img
+              src="Assets/Illustrations/Arrow.png"
+              class="arrow arrow-se"
+              alt=""
+            />
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================== FOOTER ===================== -->
+    <footer class="site-footer">
+      <div class="container footer-inner">
+        <img
+          src="Assets/Logo/Wordmark_DesignDiaries.svg"
+          alt="Design Diaries"
+          class="footer-wordmark"
+        />
+        <p class="body-large footer-tag">A quiet place for loud thoughts</p>
+      </div>
+      <div class="footer-bottom">
+        <div class="container footer-bottom-inner flex">
+          <p class="body-small footer-micro-copy">© 2026 Dason Luo</p>
+          <div class="footer-buttons flex">
+            <button class="btn btn-primary mailto-btn">
+              <img
+                src="Assets/Icons/PaperPlane_Black.png"
+                alt=""
+                class="btn-icon"
+              />Write us something
+            </button>
+            <button class="btn btn-secondary instagram-link-btn">
+              <img
+                src="Assets/Icons/Instagram_White.png"
+                alt=""
+                class="btn-icon"
+              />Follow us online
+            </button>
+          </div>
+          <p class="body-small footer-micro-copy">Hey there!</p>
+        </div>
+      </div>
+    </footer>
+
+    <button class="sound-toggle" aria-label="Unmute sound effects" aria-pressed="false">
+      <img
+        src="Assets/Icons/Volume_Off.png"
+        alt=""
+        class="sound-toggle-icon"
+      />
+    </button>
+
+    <script src="script.js"></script>
+  </body>
+</html>
