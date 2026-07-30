@@ -67,7 +67,7 @@ body {
   line-height: 1.5;
   -webkit-font-smoothing: antialiased;
   cursor:
-    url("Assets/Cursors/Cursor_Arrow_40.png") 12 3,
+    url("Assets/Cursors/Cursor_Arrow_36.png") 11 3,
     auto;
 }
 
@@ -75,7 +75,7 @@ button {
   font-family: inherit;
   border: none;
   cursor:
-    url("Assets/Cursors/Cursor_Pointer_40.png") 16 4,
+    url("Assets/Cursors/Cursor_Pointer_36.png") 14 4,
     pointer;
   background: none;
 }
@@ -104,7 +104,7 @@ h3,
 li,
 blockquote {
   cursor:
-    url("Assets/Cursors/Cursor_IBeam_40.png") 20 20,
+    url("Assets/Cursors/Cursor_IBeam_36.png") 18 18,
     text;
 }
 
@@ -450,7 +450,7 @@ h3 {
   transform: scale(1) rotate(var(--float-rot, 0deg));
   transition: transform 0.15s ease;
   cursor:
-    url("Assets/Cursors/Cursor_Grab_40.png") 20 20,
+    url("Assets/Cursors/Cursor_Grab_36.png") 18 18,
     grab;
 }
 .hero-float.is-settled:hover {
@@ -458,7 +458,7 @@ h3 {
 }
 .hero-float.is-dragging {
   cursor:
-    url("Assets/Cursors/Cursor_Grabbing_40.png") 20 20,
+    url("Assets/Cursors/Cursor_Grabbing_36.png") 18 18,
     grabbing;
   transition: none;
 }
@@ -619,7 +619,7 @@ h3 {
   border-radius: 8px;
   box-shadow: var(--shadow-elevated);
   cursor:
-    url("Assets/Cursors/Cursor_Grab_40.png") 20 20,
+    url("Assets/Cursors/Cursor_Grab_36.png") 18 18,
     grab;
   touch-action: none;
   user-select: none;
@@ -627,7 +627,7 @@ h3 {
 }
 .entry-card:active {
   cursor:
-    url("Assets/Cursors/Cursor_Grabbing_40.png") 20 20,
+    url("Assets/Cursors/Cursor_Grabbing_36.png") 18 18,
     grabbing;
 }
 
@@ -756,7 +756,7 @@ h3 {
   transform: rotate(-8deg);
   transition: transform 0.35s cubic-bezier(0.16, 0.68, 0.2, 1);
   cursor:
-    url("Assets/Cursors/Cursor_Pointer_40.png") 16 4,
+    url("Assets/Cursors/Cursor_Pointer_36.png") 14 4,
     pointer;
   /* width / height / bottom set per breakpoint (RESPONSIVE section) */
 }
@@ -1029,7 +1029,7 @@ h3 {
   padding-top: 200px;
   padding-bottom: 24px;
   cursor:
-    url("Assets/Cursors/Cursor_Pencil_40.png") 5 5,
+    url("Assets/Cursors/Cursor_Pencil_36.png") 5 5,
     auto;
   mask-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1000 800' preserveAspectRatio='none'><path d='M0,1 L60,11.65 L130,4.22 L210,23.3 L300,14.89 L400,15.99 L500,36.09 Q525,45.36 550,36.64 L630,29.72 L710,30.8 L790,47.88 Q810,54.9 830,46.92 L900,43.49 L950,57.04 L1000,47.59 L1000,800 L0,800 Z' fill='white'/></svg>");
   mask-size: 100% 100%;
