@@ -13,53 +13,63 @@ window.scrollTo(0, 0);
 // reveal, card stack, CTA scale, founder pull).
 const clamp = (value, min, max) => Math.min(Math.max(value, min), max);
 
-// Sound effects: browsers block Audio.play() unless it's called from (or
-// shortly after) a real user "activation" gesture — scrolling never counts
-// as one, no matter which event it's wired to, so a play() triggered
-// purely by scroll position can be silently rejected if no gesture has
-// happened anywhere on the page yet. Two layers handle this:
-//   1. On the first qualifying gesture (pointerdown/touchstart/keydown —
-//      wheel/scroll never qualify), every registered sound is muted-played
-//      once to unlock it for later scroll-driven playback.
-//   2. If a scroll-driven play() is attempted before that's happened and
-//      gets rejected, it's queued and actually played (audibly) on the
-//      next qualifying gesture instead of being silently lost.
-const soundEffects = [];
-const pendingPlays = new Set();
+// Sound effects run on the Web Audio API instead of a pool of
+// HTMLAudioElements. Two problems that caused (this used to be an
+// element-based setup):
+//   - Unlocking playback on iOS required calling .play()/.pause() on every
+//     registered element from inside a real user gesture. With a dozen
+//     sound effects that's a dozen decode/playback-pipeline spin-ups fired
+//     at once — expensive enough on a phone's CPU that turning sound on
+//     (which, since sound starts off, is usually the visitor's *first* tap
+//     on the page) visibly janks the page.
+//   - HTMLAudioElement.play() after resetting currentTime has to re-seek
+//     the container before it can produce sound, which adds an audible
+//     delay on mobile, especially over a slow connection.
+// Pre-decoding each clip into an AudioBuffer up front avoids both:
+// unlocking is one free AudioContext.resume() call, and playback starts a
+// fresh AudioBufferSourceNode from an already-decoded buffer, so there's
+// nothing left to seek or decode at play time.
+const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+const audioCtx = AudioContextClass ? new AudioContextClass() : null;
+const masterGain = audioCtx ? audioCtx.createGain() : null;
+if (audioCtx && masterGain) {
+  masterGain.gain.value = 0.5;
+  masterGain.connect(audioCtx.destination);
+}
 // Sound effects are off by default until the user turns them on via
 // .sound-toggle (see below).
 let soundsMuted = true;
 function registerSound(src) {
-  const audio = new Audio(src);
-  audio.muted = soundsMuted;
-  audio.volume = 0.5;
-  soundEffects.push(audio);
-  return audio;
-}
-// Use this instead of calling audio.play() directly for anything triggered
-// by scroll (not a click/tap), so a blocked attempt gets retried later.
-function playSound(audio) {
-  audio.currentTime = 0;
-  audio.play().catch(() => {
-    pendingPlays.add(audio);
-  });
-}
-function unlockSoundEffects() {
-  soundEffects.forEach((audio) => {
-    if (pendingPlays.has(audio)) {
-      pendingPlays.delete(audio);
-      audio.currentTime = 0;
-      audio.play().catch(() => {});
-      return;
-    }
-    audio
-      .play()
-      .then(() => {
-        audio.pause();
-        audio.currentTime = 0;
+  const sound = { buffer: null };
+  if (audioCtx) {
+    fetch(src)
+      .then((res) => res.arrayBuffer())
+      .then((data) => audioCtx.decodeAudioData(data))
+      .then((buffer) => {
+        sound.buffer = buffer;
       })
       .catch(() => {});
-  });
+  }
+  return sound;
+}
+// Use this for every sound effect. Returns whether it actually played
+// (false while muted, still decoding, or before the AudioContext has been
+// unlocked by a user gesture) so scroll-driven call sites can retry on the
+// next tick instead of losing the cue.
+function playSound(sound) {
+  if (!audioCtx || soundsMuted || !sound.buffer || audioCtx.state !== "running") {
+    return false;
+  }
+  const source = audioCtx.createBufferSource();
+  source.buffer = sound.buffer;
+  source.connect(masterGain);
+  source.start(0);
+  return true;
+}
+function unlockSoundEffects() {
+  if (audioCtx && audioCtx.state === "suspended") {
+    audioCtx.resume();
+  }
   ["pointerdown", "touchstart", "keydown"].forEach((type) =>
     document.removeEventListener(type, unlockSoundEffects),
   );
@@ -68,17 +78,15 @@ function unlockSoundEffects() {
   document.addEventListener(type, unlockSoundEffects),
 );
 
-// Sound toggle button: mutes/unmutes every registered sound effect. Sound
-// starts off, so turning it on plays a click as immediate confirmation.
+// Sound toggle button: flips the shared mute flag every registered sound
+// checks before playing. Sound starts off, so turning it on plays a click
+// as immediate confirmation.
 const soundToggle = document.querySelector(".sound-toggle");
 if (soundToggle) {
   const soundToggleIcon = soundToggle.querySelector(".sound-toggle-icon");
   const toggleClickSound = registerSound("Assets/Sound effects/Marker_Twist.mp3");
   soundToggle.addEventListener("click", () => {
     soundsMuted = !soundsMuted;
-    soundEffects.forEach((audio) => {
-      audio.muted = soundsMuted;
-    });
     soundToggle.setAttribute("aria-pressed", String(!soundsMuted));
     soundToggle.setAttribute(
       "aria-label",
@@ -88,8 +96,7 @@ if (soundToggle) {
       ? "Assets/Icons/Volume_Off.png"
       : "Assets/Icons/Volume_On.png";
     if (!soundsMuted) {
-      toggleClickSound.currentTime = 0;
-      toggleClickSound.play().catch(() => {});
+      playSound(toggleClickSound);
     }
   });
 }
@@ -99,13 +106,11 @@ const btnPressSound = registerSound("Assets/Sound effects/Pen_Press.mp3");
 const btnReleaseSound = registerSound("Assets/Sound effects/Pen_Release.mp3");
 document.addEventListener("pointerdown", (event) => {
   if (!event.target.closest(".btn")) return;
-  btnPressSound.currentTime = 0;
-  btnPressSound.play().catch(() => {});
+  playSound(btnPressSound);
 });
 document.addEventListener("pointerup", (event) => {
   if (!event.target.closest(".btn")) return;
-  btnReleaseSound.currentTime = 0;
-  btnReleaseSound.play().catch(() => {});
+  playSound(btnReleaseSound);
 });
 
 // "Ask a question" / "Write us something" open the user's mail client
@@ -203,12 +208,20 @@ if (heroPin && quoteSection) {
   const quoteSlideSound = registerSound("Assets/Sound effects/Paper_Slide_3.mp3");
   let quoteSliding = false;
   let quoteSlideSoundPlayed = false;
+  // marginTop affects document flow (unlike the transform-based writes
+  // elsewhere on the page), so writing it forces a layout recalculation —
+  // skip the write once progress has settled at 0 or 1, which is most of
+  // the page's scroll range.
+  let lastQuoteProgress = -1;
 
   function updateQuoteSlide() {
     const rect = heroPin.getBoundingClientRect();
     const heroH = rect.height;
     const progress = clamp(-rect.top / heroH, 0, 1);
-    quoteSection.style.marginTop = `${-MAX_PULL * progress}px`;
+    if (progress !== lastQuoteProgress) {
+      lastQuoteProgress = progress;
+      quoteSection.style.marginTop = `${-MAX_PULL * progress}px`;
+    }
 
     if (progress > 0 && !quoteSliding) {
       quoteSliding = true;
@@ -217,20 +230,13 @@ if (heroPin && quoteSection) {
       quoteSliding = false;
       quoteSlideSoundPlayed = false;
       // Quote section has moved back away (scrolling back up) — play again.
-      quoteSlideSound.currentTime = 0;
-      quoteSlideSound.play().catch(() => {});
+      playSound(quoteSlideSound);
     }
     // Retry directly on each scroll tick (rather than queuing for the next
     // click anywhere on the page) so it only ever plays while the quote
     // section is actually sliding over the hero.
     if (quoteSliding && !quoteSlideSoundPlayed) {
-      quoteSlideSound.currentTime = 0;
-      quoteSlideSound
-        .play()
-        .then(() => {
-          quoteSlideSoundPlayed = true;
-        })
-        .catch(() => {});
+      quoteSlideSoundPlayed = playSound(quoteSlideSound);
     }
   }
 
@@ -416,8 +422,7 @@ if (cardStack) {
   function onPointerDown(event) {
     const card = event.currentTarget;
     if (!isTop(card)) return;
-    dragSound.currentTime = 0;
-    dragSound.play().catch(() => {});
+    playSound(dragSound);
     dragCard = card;
     dragCard.getAnimations().forEach((a) => a.cancel());
     targetX = 0;
@@ -572,6 +577,10 @@ if (testimonialRow) {
   );
   testimonialsObserver.observe(testimonialRow);
 
+  // The rotation only needs to run while the carousel is actually visible —
+  // without this it was a rAF loop writing a transform 60x/sec for the
+  // entire time a visitor spent anywhere else on the page.
+  let rafId = null;
   function tick() {
     if (cachedLoopWidth > 0) {
       speed += (targetSpeed - speed) * BOOST_DECAY;
@@ -579,9 +588,22 @@ if (testimonialRow) {
       offset = ((offset % cachedLoopWidth) + cachedLoopWidth) % cachedLoopWidth;
       track.style.transform = `translateX(${-offset}px)`;
     }
-    requestAnimationFrame(tick);
+    rafId = requestAnimationFrame(tick);
   }
-  requestAnimationFrame(tick);
+  const visibilityObserver = new IntersectionObserver(
+    (entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting && rafId === null) {
+          rafId = requestAnimationFrame(tick);
+        } else if (!entry.isIntersecting && rafId !== null) {
+          cancelAnimationFrame(rafId);
+          rafId = null;
+        }
+      });
+    },
+    { rootMargin: "200px" },
+  );
+  visibilityObserver.observe(testimonialRow);
 }
 
 function animateAccordionHeight(panel, toHeight) {
@@ -610,8 +632,7 @@ function animateAccordionHeight(panel, toHeight) {
 // toggle below on tablet/phone.
 const arrowSpinSound = registerSound("Assets/Sound effects/Marker_Twist.mp3");
 function playArrowSpin() {
-  arrowSpinSound.currentTime = 0;
-  arrowSpinSound.play().catch(() => {});
+  playSound(arrowSpinSound);
 }
 
 // CTA frame lifts up as it scrolls into view
@@ -622,6 +643,7 @@ if (ctaFrame) {
   // flip the arrows to point at the button the same way desktop hover does.
   const isTouchBreakpoint = window.innerWidth < 1280;
   let arrowsExpanded = false;
+  let lastCtaProgress = -1;
 
   function updateCtaScale() {
     const rect = ctaFrame.getBoundingClientRect();
@@ -630,8 +652,11 @@ if (ctaFrame) {
     const start = vh; // frame center at viewport bottom -> just entering
     const end = vh / 2; // frame center at viewport center -> fully lifted
     const progress = clamp((start - center) / (start - end), 0, 1);
-    const scale = 1 + 0.4 * progress;
-    ctaFrame.style.transform = `scale(${scale})`;
+    if (progress !== lastCtaProgress) {
+      lastCtaProgress = progress;
+      const scale = 1 + 0.4 * progress;
+      ctaFrame.style.transform = `scale(${scale})`;
+    }
 
     if (isTouchBreakpoint && arrowCta) {
       const shouldExpand = progress >= 1;
@@ -714,8 +739,7 @@ const accordionLidSound = registerSound("Assets/Sound effects/Marker_Lid.mp3");
 
 document.querySelectorAll(".accordion-trigger").forEach((trigger) => {
   trigger.addEventListener("click", () => {
-    accordionLidSound.currentTime = 0;
-    accordionLidSound.play().catch(() => {});
+    playSound(accordionLidSound);
 
     // The trigger is wrapped in an <h3> for accessible heading navigation,
     // so the panel is now a sibling of that wrapper, not of the button.
@@ -765,6 +789,7 @@ if (founderCard) {
   let headingRevealed = false;
   let hasStartedMoving = false;
   let pullSoundPlayed = false;
+  let lastPullProgress = -1;
 
   function updateFounderPull() {
     const rect = founderCard.getBoundingClientRect();
@@ -772,8 +797,11 @@ if (founderCard) {
     const start = vh; // card top at viewport bottom -> still tucked in
     const end = vh * 0.4; // card top partway up the viewport -> fully pulled out
     const progress = clamp((start - rect.top) / (start - end), 0, 1);
-    const y = PULL_DISTANCE * (1 - progress);
-    founderCard.style.transform = `translateY(${y}px)`;
+    if (progress !== lastPullProgress) {
+      lastPullProgress = progress;
+      const y = PULL_DISTANCE * (1 - progress);
+      founderCard.style.transform = `translateY(${y}px)`;
+    }
     if (progress > 0 && !hasStartedMoving) {
       hasStartedMoving = true;
       pullSoundPlayed = false;
@@ -781,20 +809,13 @@ if (founderCard) {
       hasStartedMoving = false;
       pullSoundPlayed = false;
       // Paper has moved back into the envelope (scrolling back up) — play again.
-      pullSound.currentTime = 0;
-      pullSound.play().catch(() => {});
+      playSound(pullSound);
     }
     // Retry playing directly on each scroll tick instead of queuing for the
     // next click anywhere on the page — queuing meant a click made after
     // the card had scrolled back out of view would still fire the sound.
     if (hasStartedMoving && !pullSoundPlayed) {
-      pullSound.currentTime = 0;
-      pullSound
-        .play()
-        .then(() => {
-          pullSoundPlayed = true;
-        })
-        .catch(() => {});
+      pullSoundPlayed = playSound(pullSound);
     }
     if (progress >= 1 && !headingRevealed && founderHeading) {
       headingRevealed = true;
