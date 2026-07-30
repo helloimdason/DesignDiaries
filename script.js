@@ -550,8 +550,7 @@ if (testimonialRow) {
   const isTouchBreakpoint = window.innerWidth < 1280;
   const SPEED = isTouchBreakpoint ? 0.4 : 0.7; // px per frame, steady-state rotation
   const HOVER_SPEED = 0.1; // px per frame, while the pointer is over the carousel
-  const BOOST_SPEED = 14; // px per frame, burst speed when the section enters view
-  const BOOST_DECAY = 0.03; // how fast speed eases toward its target
+  const SPEED_EASE = 0.03; // how fast speed eases toward its target (hover in/out)
   let speed = SPEED;
   let targetSpeed = SPEED;
   let offset = 0;
@@ -574,28 +573,13 @@ if (testimonialRow) {
   });
   trackResizeObserver.observe(track);
 
-  // Slide in fast as the section scrolls into view, then ease down to the
-  // steady rotation speed.
-  const testimonialsObserver = new IntersectionObserver(
-    (entries) => {
-      entries.forEach((entry) => {
-        if (entry.isIntersecting) {
-          speed = BOOST_SPEED;
-          testimonialsObserver.unobserve(entry.target);
-        }
-      });
-    },
-    { threshold: 0.2 },
-  );
-  testimonialsObserver.observe(testimonialRow);
-
   // The rotation only needs to run while the carousel is actually visible —
   // without this it was a rAF loop writing a transform 60x/sec for the
   // entire time a visitor spent anywhere else on the page.
   let rafId = null;
   function tick() {
     if (cachedLoopWidth > 0) {
-      speed += (targetSpeed - speed) * BOOST_DECAY;
+      speed += (targetSpeed - speed) * SPEED_EASE;
       offset += speed;
       offset = ((offset % cachedLoopWidth) + cachedLoopWidth) % cachedLoopWidth;
       track.style.transform = `translateX(${-offset}px)`;
