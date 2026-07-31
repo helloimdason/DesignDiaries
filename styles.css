@@ -396,6 +396,7 @@ h3 {
 .hero-heading {
   display: flex;
   flex-direction: column;
+  text-wrap: pretty;
   /* gap set per breakpoint (RESPONSIVE section) */
 }
 
@@ -1170,7 +1171,9 @@ h3 {
   background: var(--color-white);
   border: 1.5px solid var(--color-black);
   border-radius: 8px;
-  transition: transform 0.15s ease, opacity 0.2s ease;
+  transition:
+    transform 0.15s ease,
+    opacity 0.2s ease;
   /* left / bottom / width / height set per breakpoint (RESPONSIVE section) */
 }
 .sound-toggle:hover {
