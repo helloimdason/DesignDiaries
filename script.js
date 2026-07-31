@@ -205,6 +205,24 @@ if (siteHeader) {
   updateHeader();
 }
 
+// Sound toggle: fade out once the visitor has scrolled to the very bottom
+// of the page. The footer's height scales with the viewport (110vh), so
+// "footer visible" isn't a reliable trigger — bottom-of-document is.
+if (soundToggle) {
+  let atBottom = false;
+  function updateSoundToggleVisibility() {
+    const scrolledToBottom =
+      window.innerHeight + window.scrollY >=
+      document.documentElement.scrollHeight - 2;
+    if (scrolledToBottom !== atBottom) {
+      atBottom = scrolledToBottom;
+      soundToggle.classList.toggle("is-hidden", atBottom);
+    }
+  }
+  lenis.on("scroll", updateSoundToggleVisibility);
+  updateSoundToggleVisibility();
+}
+
 // Quote section slides over the hero as you scroll. The hero itself is
 // plain normal-flow content (never sticky/fixed) — as it scrolls past at
 // the normal rate, .quote-section's margin-top is eased from 0 down to a

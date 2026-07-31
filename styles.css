@@ -1026,7 +1026,7 @@ h3 {
   background: var(--color-black);
   color: var(--color-white);
   height: 110vh;
-  padding-top: 200px;
+  padding-top: 180px;
   padding-bottom: 24px;
   cursor:
     url("Assets/Cursors/Cursor_Pencil_36.png") 5 5,
@@ -1093,6 +1093,21 @@ h3 {
   /* grid-template-columns / gap / justify-items set per breakpoint
      (RESPONSIVE section) */
 }
+.footer-legal-links {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.footer-legal-links a {
+  text-decoration: none;
+  cursor:
+    url("Assets/Cursors/Cursor_Pointer_36.png") 14 4,
+    pointer;
+}
+.footer-legal-links a:hover,
+.footer-legal-links a:active {
+  text-decoration: underline;
+}
 .footer-buttons {
   flex-direction: column;
   align-items: center;
@@ -1134,6 +1149,7 @@ h3 {
 .footer-micro-copy {
   color: var(--color-white);
   opacity: 0.3;
+  align-self: end;
   /* font-size set per breakpoint (RESPONSIVE section) */
 }
 
@@ -1147,15 +1163,77 @@ h3 {
   background: var(--color-white);
   border: 1.5px solid var(--color-black);
   border-radius: 8px;
-  transition: transform 0.15s ease;
+  transition: transform 0.15s ease, opacity 0.2s ease;
   /* left / bottom / width / height set per breakpoint (RESPONSIVE section) */
 }
 .sound-toggle:hover {
   transform: scale(1.05);
 }
+.sound-toggle.is-hidden {
+  opacity: 0;
+  pointer-events: none;
+}
 .sound-toggle-icon {
   width: 55%;
   height: 55%;
+}
+
+/* ============ LEGAL PAGES (privacy policy, terms, etc.) ============ */
+.legal-section .container {
+  padding-top: 60px;
+  padding-bottom: 250px;
+}
+.legal-content {
+  max-width: 1000px;
+  margin-left: auto;
+  margin-right: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 80px;
+}
+.legal-header {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+}
+.legal-meta {
+  color: var(--color-black-70);
+}
+.legal-content p,
+.legal-content li {
+  color: var(--color-black-70);
+}
+.legal-content strong {
+  color: var(--color-black);
+}
+.h2-small {
+  font-size: var(--h2-small-size);
+  font-weight: 600;
+}
+/* Each numbered section: heading grouped with its own body copy via gap,
+   rather than the previous margin-top/margin-bottom pairing. */
+.legal-group {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+}
+.legal-content ul {
+  list-style: disc;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+  padding-left: var(--space-lg);
+}
+.legal-content a {
+  color: inherit;
+  text-decoration-color: var(--color-black-70);
+  text-underline-offset: 2px;
+  cursor:
+    url("Assets/Cursors/Cursor_Pointer_36.png") 14 4,
+    pointer;
+}
+.legal-content a:hover {
+  text-decoration-color: var(--color-black);
 }
 
 /* ============================================================
@@ -1174,6 +1252,7 @@ h3 {
     --h1-size: 65px;
     --h2-size: 50px;
     --h3-size: 24px;
+    --h2-small-size: 30px;
     --section-pad-x: 80px;
     --section-pad-y: var(--section-space-lg);
   }
@@ -1438,10 +1517,10 @@ h3 {
   .footer-bottom-inner {
     grid-template-columns: 1fr auto 1fr;
   }
-  .footer-bottom-inner > .footer-micro-copy:first-child {
+  .footer-bottom-inner > *:first-child {
     justify-self: start;
   }
-  .footer-bottom-inner > .footer-micro-copy:last-child {
+  .footer-bottom-inner > *:last-child {
     justify-self: end;
   }
   .footer-buttons {
@@ -1469,6 +1548,7 @@ h3 {
     --h1-size: 55px;
     --h2-size: 45px;
     --h3-size: 24px;
+    --h2-small-size: 27px;
     --section-pad-x: 30px;
     --section-pad-y: var(--section-space-lg);
   }
@@ -1765,10 +1845,10 @@ h3 {
   .footer-bottom-inner {
     grid-template-columns: 1fr auto 1fr;
   }
-  .footer-bottom-inner > .footer-micro-copy:first-child {
+  .footer-bottom-inner > *:first-child {
     justify-self: start;
   }
-  .footer-bottom-inner > .footer-micro-copy:last-child {
+  .footer-bottom-inner > *:last-child {
     justify-self: end;
   }
   .footer-buttons {
@@ -1796,6 +1876,7 @@ h3 {
     --h1-size: 36px;
     --h2-size: 32px;
     --h3-size: 20px;
+    --h2-small-size: 22px;
     --section-pad-x: 16px;
     --section-pad-y: var(--section-space-md);
   }
@@ -2096,7 +2177,7 @@ h3 {
      pins to the bottom — full grid restructure via display:contents on the
      original flex wrappers. */
   .site-footer {
-    padding-top: 150px;
+    padding-top: 140px;
     padding-left: var(--section-pad-x);
     padding-right: var(--section-pad-x);
     display: grid;
@@ -2107,7 +2188,7 @@ h3 {
       "tag tag"
       "buttons buttons"
       ". ."
-      "copy hey";
+      "legal copyright";
     row-gap: var(--space-2xl);
     justify-items: center;
   }
@@ -2132,12 +2213,12 @@ h3 {
     width: 20px;
     height: 20px;
   }
-  .footer-bottom-inner > .footer-micro-copy:first-child {
-    grid-area: copy;
+  .footer-bottom-inner > *:first-child {
+    grid-area: legal;
     justify-self: start;
   }
-  .footer-bottom-inner > .footer-micro-copy:last-child {
-    grid-area: hey;
+  .footer-bottom-inner > *:last-child {
+    grid-area: copyright;
     justify-self: end;
   }
   .footer-micro-copy {
@@ -2150,5 +2231,14 @@ h3 {
     bottom: 16px;
     width: 40px;
     height: 40px;
+  }
+
+  /* Legal pages */
+  .legal-section .container {
+    padding-top: 50px;
+    padding-bottom: 150px;
+  }
+  .legal-content {
+    gap: 48px;
   }
 }
