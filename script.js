@@ -221,6 +221,12 @@ if (soundToggle) {
   }
   lenis.on("scroll", updateSoundToggleVisibility);
   updateSoundToggleVisibility();
+  // Below-the-fold images load lazily, so the page's real scrollHeight
+  // isn't known yet at this point — the check above can wrongly measure
+  // "at the bottom" before anything has loaded in, hiding (and disabling,
+  // via pointer-events: none) the button before the visitor ever gets to
+  // tap it. Recheck whenever the page's height actually changes.
+  new ResizeObserver(updateSoundToggleVisibility).observe(document.body);
 }
 
 // Quote section slides over the hero as you scroll. The hero itself is
