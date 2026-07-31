@@ -51,6 +51,11 @@ let audioCtx = null;
 try {
   audioCtx = AudioContextClass ? new AudioContextClass() : null;
   debugLog("audioCtx created: " + (audioCtx ? "yes, initial state=" + audioCtx.state : "no"));
+  if (audioCtx) {
+    audioCtx.addEventListener("statechange", () => {
+      debugLog(">>> statechange -> " + audioCtx.state);
+    });
+  }
 } catch (err) {
   debugLog("audioCtx creation THREW: " + err);
 }
@@ -147,6 +152,22 @@ function unlockSoundEffects() {
         .then(() => debugLog("resume() resolved, state=" + audioCtx.state))
         .catch((err) => debugLog("resume() REJECTED: " + err));
     }
+    // DEBUG: keep retrying resume() for a few seconds in case "interrupted"
+    // doesn't respond to the very first call — this whole retry block is
+    // temporary, just to find out if that's what's happening.
+    let attempts = 0;
+    const retry = setInterval(() => {
+      attempts++;
+      debugLog("retry #" + attempts + ": state=" + audioCtx.state);
+      if (audioCtx.state === "running" || attempts >= 8) {
+        clearInterval(retry);
+        return;
+      }
+      audioCtx
+        .resume()
+        .then(() => debugLog("retry resume() resolved, state=" + audioCtx.state))
+        .catch((err) => debugLog("retry resume() REJECTED: " + err));
+    }, 500);
   }
   ["pointerdown", "touchstart", "keydown"].forEach((type) =>
     document.removeEventListener(type, unlockSoundEffects),
