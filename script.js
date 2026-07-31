@@ -138,7 +138,10 @@ function unlockSoundEffects() {
     } catch (err) {
       debugLog("primer buffer THREW: " + err);
     }
-    if (audioCtx.state === "suspended") {
+    if (audioCtx.state !== "running") {
+      // iOS Safari can report a non-standard "interrupted" state here
+      // instead of "suspended" (e.g. before the page has audio focus) —
+      // resume() needs to be called for that too, not just "suspended".
       audioCtx
         .resume()
         .then(() => debugLog("resume() resolved, state=" + audioCtx.state))
