@@ -123,7 +123,19 @@ if (soundToggle) {
       ? "Assets/Icons/Volume_Off.png"
       : "Assets/Icons/Volume_On.png";
     if (!soundsMuted) {
-      playSound(toggleClickSound);
+      // On the very first press, the AudioContext is often still mid-unlock
+      // (see resumeAudioContext's retry loop) — if the confirmation click
+      // couldn't play yet, catch it the moment the context actually comes
+      // online instead of just losing it.
+      if (!playSound(toggleClickSound) && audioCtx) {
+        const onStateChange = () => {
+          if (audioCtx.state === "running") {
+            audioCtx.removeEventListener("statechange", onStateChange);
+            if (!soundsMuted) playSound(toggleClickSound);
+          }
+        };
+        audioCtx.addEventListener("statechange", onStateChange);
+      }
     }
   });
 }
@@ -185,6 +197,7 @@ if (siteHeader) {
   let lastScrollY = window.scrollY;
   const siteFooterEl = document.querySelector(".site-footer");
   const headerLogo = siteHeader.querySelector(".logo");
+  const themeColorMeta = document.querySelector('meta[name="theme-color"]');
   const LOGO_LIGHT_BG = "Assets/Logo/Logo_DesignDiaries.svg";
   const LOGO_DARK_BG = "Assets/Logo/Logo_DesignDiaries_Outlined.svg";
   let isOnDark = false;
@@ -211,6 +224,13 @@ if (siteHeader) {
         siteHeader.classList.toggle("is-on-dark", onDark);
         if (headerLogo) {
           headerLogo.src = onDark ? LOGO_DARK_BG : LOGO_LIGHT_BG;
+        }
+        // Matches the browser's own chrome (status bar, and on iOS Safari
+        // the bottom toolbar) to whichever part of the page is currently
+        // at the edges of the screen, instead of leaving it plain white
+        // against the dark footer.
+        if (themeColorMeta) {
+          themeColorMeta.setAttribute("content", onDark ? "#171611" : "#fdfdfc");
         }
       }
     }
@@ -587,7 +607,7 @@ if (testimonialRow) {
   });
 
   const isTouchBreakpoint = window.innerWidth < 1280;
-  const SPEED = isTouchBreakpoint ? 0.4 : 0.7; // px per frame, steady-state rotation
+  const SPEED = isTouchBreakpoint ? 0.55 : 0.7; // px per frame, steady-state rotation
   const HOVER_SPEED = 0.1; // px per frame, while the pointer is over the carousel
   const SPEED_EASE = 0.03; // how fast speed eases toward its target (hover in/out)
   let speed = SPEED;
@@ -707,17 +727,21 @@ if (ctaFrame) {
   updateCtaScale();
 }
 
-// Desktop: hover in/out on each arrow individually, and on the button
-// itself (CSS turns the arrows toward it on :hover via .arrow-cta:has())
-const ctaArrows = document.querySelectorAll(".arrow-cta .arrow");
-ctaArrows.forEach((arrow) => {
-  arrow.addEventListener("pointerenter", playArrowSpin);
-  arrow.addEventListener("pointerleave", playArrowSpin);
-});
-const ctaArrowButton = document.querySelector(".arrow-cta .btn-large");
-if (ctaArrowButton) {
-  ctaArrowButton.addEventListener("pointerenter", playArrowSpin);
-  ctaArrowButton.addEventListener("pointerleave", playArrowSpin);
+// Desktop only: hover in/out on each arrow individually, and on the button
+// itself (CSS turns the arrows toward it on :hover via .arrow-cta:has()).
+// On tablet/phone, a tap fires pointerenter then pointerleave too, which
+// would double up with the scroll-driven expand sound above.
+if (window.innerWidth >= 1280) {
+  const ctaArrows = document.querySelectorAll(".arrow-cta .arrow");
+  ctaArrows.forEach((arrow) => {
+    arrow.addEventListener("pointerenter", playArrowSpin);
+    arrow.addEventListener("pointerleave", playArrowSpin);
+  });
+  const ctaArrowButton = document.querySelector(".arrow-cta .btn-large");
+  if (ctaArrowButton) {
+    ctaArrowButton.addEventListener("pointerenter", playArrowSpin);
+    ctaArrowButton.addEventListener("pointerleave", playArrowSpin);
+  }
 }
 
 document.querySelectorAll(".accordion-panel").forEach((panel) => {
