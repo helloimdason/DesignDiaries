@@ -1149,8 +1149,15 @@ h3 {
 .footer-micro-copy {
   color: var(--color-white);
   opacity: 0.3;
-  align-self: end;
   /* font-size set per breakpoint (RESPONSIVE section) */
+}
+/* Pin the copyright line to the bottom of the footer-bottom-inner row.
+   Scoped to a direct child (not just .footer-micro-copy) because that
+   class is also used by the .footer-legal-links anchors, which are
+   nested inside their own column flex container — align-self: end
+   there would mean "right", not "bottom". */
+.footer-bottom-inner > p.footer-micro-copy {
+  align-self: end;
 }
 
 /* ============ SOUND TOGGLE ============ */
