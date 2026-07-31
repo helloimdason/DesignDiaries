@@ -810,7 +810,7 @@ if (founderHeading) {
     const span = document.createElement("span");
     span.textContent = char;
     span.className = "founder-heading-letter";
-    span.style.transitionDelay = `${i * 30}ms`;
+    span.style.transitionDelay = `${i * 45}ms`;
     span.setAttribute("aria-hidden", "true");
     founderHeading.appendChild(span);
   });
