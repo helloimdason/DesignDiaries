@@ -2013,7 +2013,7 @@ h3 {
     margin: 0 auto;
     overflow: hidden;
     border-radius: 8px;
-    padding: var(--space-xl) var(--space-xl) 36px var(--space-xl);
+    padding: 24px 24px 28px;
     justify-content: flex-end;
     text-align: left;
     gap: var(--space-lg);
