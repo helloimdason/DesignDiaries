@@ -29,41 +29,12 @@ const clamp = (value, min, max) => Math.min(Math.max(value, min), max);
 // unlocking is one free AudioContext.resume() call, and playback starts a
 // fresh AudioBufferSourceNode from an already-decoded buffer, so there's
 // nothing left to seek or decode at play time.
-// TEMPORARY on-screen debug panel for tracking down why sound doesn't
-// play on some phones — remove once diagnosed. Shows what a desktop
-// devtools console would, directly on the page, since phone browsers
-// don't have that available.
-const debugPanel = document.createElement("div");
-debugPanel.style.cssText =
-  "position:fixed;top:0;left:0;right:0;z-index:99999;background:rgba(0,0,0,0.88);" +
-  "color:#0f0;font:11px/1.4 monospace;padding:6px 8px;white-space:pre-wrap;" +
-  "pointer-events:none;max-height:40vh;overflow:auto;";
-document.addEventListener("DOMContentLoaded", () => {
-  document.body.prepend(debugPanel);
-});
-function debugLog(msg) {
-  debugPanel.textContent += msg + "\n";
-}
-
 const AudioContextClass = window.AudioContext || window.webkitAudioContext;
-debugLog("AudioContext support: " + (AudioContextClass ? "yes" : "NO (unsupported)"));
-let audioCtx = null;
-try {
-  audioCtx = AudioContextClass ? new AudioContextClass() : null;
-  debugLog("audioCtx created: " + (audioCtx ? "yes, initial state=" + audioCtx.state : "no"));
-  if (audioCtx) {
-    audioCtx.addEventListener("statechange", () => {
-      debugLog(">>> statechange -> " + audioCtx.state);
-    });
-  }
-} catch (err) {
-  debugLog("audioCtx creation THREW: " + err);
-}
+const audioCtx = AudioContextClass ? new AudioContextClass() : null;
 const masterGain = audioCtx ? audioCtx.createGain() : null;
 if (audioCtx && masterGain) {
   masterGain.gain.value = 0.5;
   masterGain.connect(audioCtx.destination);
-  debugLog("masterGain connected, sampleRate=" + audioCtx.sampleRate);
 }
 // Sound effects are off by default until the user turns them on via
 // .sound-toggle (see below).
@@ -72,18 +43,12 @@ function registerSound(src) {
   const sound = { buffer: null };
   if (audioCtx) {
     fetch(src)
-      .then((res) => {
-        if (!res.ok) throw new Error("HTTP " + res.status + " fetching " + src);
-        return res.arrayBuffer();
-      })
+      .then((res) => res.arrayBuffer())
       .then((data) => audioCtx.decodeAudioData(data))
       .then((buffer) => {
         sound.buffer = buffer;
-        debugLog("decoded OK: " + src);
       })
-      .catch((err) => {
-        debugLog("decode FAILED for " + src + ": " + err);
-      });
+      .catch(() => {});
   }
   return sound;
 }
@@ -92,41 +57,33 @@ function registerSound(src) {
 // unlocked by a user gesture) so scroll-driven call sites can retry on the
 // next tick instead of losing the cue.
 function playSound(sound) {
-  if (!audioCtx) {
-    debugLog("playSound: no audioCtx");
+  if (!audioCtx || soundsMuted || !sound.buffer || audioCtx.state !== "running") {
     return false;
   }
-  if (soundsMuted) {
-    return false;
-  }
-  if (!sound.buffer) {
-    debugLog("playSound: buffer not decoded yet");
-    return false;
-  }
-  if (audioCtx.state !== "running") {
-    debugLog("playSound: audioCtx.state=" + audioCtx.state + " (not running)");
-    return false;
-  }
-  try {
-    const source = audioCtx.createBufferSource();
-    source.buffer = sound.buffer;
-    source.connect(masterGain);
-    source.start(0);
-    debugLog(
-      "playSound: started OK (ctx state=" +
-        audioCtx.state +
-        ", gain=" +
-        masterGain.gain.value +
-        ")",
-    );
-    return true;
-  } catch (err) {
-    debugLog("playSound THREW: " + err);
-    return false;
-  }
+  const source = audioCtx.createBufferSource();
+  source.buffer = sound.buffer;
+  source.connect(masterGain);
+  source.start(0);
+  return true;
+}
+function resumeAudioContext() {
+  if (!audioCtx || audioCtx.state === "running") return;
+  // iOS Safari can report a non-standard "interrupted" state instead of
+  // "suspended" (e.g. before the page has audio focus), and doesn't always
+  // act on the very first resume() call made while interrupted — retry for
+  // a few seconds rather than leaving the context stuck if that happens.
+  let attempts = 0;
+  const retry = setInterval(() => {
+    attempts++;
+    if (audioCtx.state === "running" || attempts >= 8) {
+      clearInterval(retry);
+      return;
+    }
+    audioCtx.resume().catch(() => {});
+  }, 500);
+  audioCtx.resume().catch(() => {});
 }
 function unlockSoundEffects() {
-  debugLog("unlockSoundEffects fired, audioCtx.state=" + (audioCtx ? audioCtx.state : "n/a"));
   if (audioCtx) {
     // On iOS Safari, AudioContext.resume() alone doesn't reliably open the
     // hardware audio pipeline — actually starting a (silent) buffer
@@ -134,40 +91,11 @@ function unlockSoundEffects() {
     // audio libraries use to force it unlocked, rather than just asking the
     // context to resume and hoping the state flips before anything tries
     // to play.
-    try {
-      const primer = audioCtx.createBufferSource();
-      primer.buffer = audioCtx.createBuffer(1, 1, 22050);
-      primer.connect(audioCtx.destination);
-      primer.start(0);
-      debugLog("primer buffer started OK");
-    } catch (err) {
-      debugLog("primer buffer THREW: " + err);
-    }
-    if (audioCtx.state !== "running") {
-      // iOS Safari can report a non-standard "interrupted" state here
-      // instead of "suspended" (e.g. before the page has audio focus) —
-      // resume() needs to be called for that too, not just "suspended".
-      audioCtx
-        .resume()
-        .then(() => debugLog("resume() resolved, state=" + audioCtx.state))
-        .catch((err) => debugLog("resume() REJECTED: " + err));
-    }
-    // DEBUG: keep retrying resume() for a few seconds in case "interrupted"
-    // doesn't respond to the very first call — this whole retry block is
-    // temporary, just to find out if that's what's happening.
-    let attempts = 0;
-    const retry = setInterval(() => {
-      attempts++;
-      debugLog("retry #" + attempts + ": state=" + audioCtx.state);
-      if (audioCtx.state === "running" || attempts >= 8) {
-        clearInterval(retry);
-        return;
-      }
-      audioCtx
-        .resume()
-        .then(() => debugLog("retry resume() resolved, state=" + audioCtx.state))
-        .catch((err) => debugLog("retry resume() REJECTED: " + err));
-    }, 500);
+    const primer = audioCtx.createBufferSource();
+    primer.buffer = audioCtx.createBuffer(1, 1, 22050);
+    primer.connect(audioCtx.destination);
+    primer.start(0);
+    resumeAudioContext();
   }
   ["pointerdown", "touchstart", "keydown"].forEach((type) =>
     document.removeEventListener(type, unlockSoundEffects),
@@ -176,9 +104,6 @@ function unlockSoundEffects() {
 ["pointerdown", "touchstart", "keydown"].forEach((type) =>
   document.addEventListener(type, unlockSoundEffects),
 );
-window.addEventListener("error", (e) => {
-  debugLog("window error: " + e.message + " @ " + e.filename + ":" + e.lineno);
-});
 
 // Sound toggle button: flips the shared mute flag every registered sound
 // checks before playing. Sound starts off, so turning it on plays a click
